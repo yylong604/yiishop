@@ -17,7 +17,7 @@ echo \yii\bootstrap\Html::a('添加',['brand/add'],['class'=>'btn btn-success','
         <tr>
             <td><?=$model->id?></td>
             <td><?=$model->name?></td>
-            <td><?php echo \yii\bootstrap\Html::img('@web'.$model->logo,['width'=>'50px'])?></td>
+            <td><?php echo \yii\bootstrap\Html::img($model->logoUrl(),['width'=>'50px'])?></td>
             <td><?=$model->sort?></td>
             <td><?=\app\models\Brand::$status_options[$model->status]?></td>
             <td>

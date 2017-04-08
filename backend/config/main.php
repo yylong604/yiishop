@@ -17,8 +17,10 @@ return [
             'csrfParam' => '_csrf-backend',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'class'=>\yii\web\User::className(),
+            'identityClass' => \backend\models\Admin::className(),
             'enableAutoLogin' => true,
+            'loginUrl' => ['admin/login'],
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
         'session' => [
@@ -43,6 +45,14 @@ return [
             'showScriptName' => false,
             'rules' => [
             ],
+        ],
+        'qiniu'=>[
+            'class'=>\backend\components\Qiniu::className(),
+            'accessKey'=>'vg_CMChOKEbBjFaJU2_kBs5B4mjrOVnMx1IqCdqb',
+            'secretKey'=>'ggCAHtgMKH2XPZ9vOb2JuvCjlQFHflYXWvdqJIbW',
+            'domain'=>'http://onko5sc8g.bkt.clouddn.com/',
+            'bucket'=>'yii-shop',
+            'region'=>\backend\components\Qiniu::HOST_HUADONG,
         ],
 
     ],

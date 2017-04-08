@@ -33,7 +33,7 @@ class Brand extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'sort', 'logo'], 'required'],
+            [['name', 'sort','logo'], 'required'],
             [['intro'], 'string'],
             [['sort', 'status'], 'integer'],
             [['name'], 'string', 'max' => 50],
@@ -54,5 +54,17 @@ class Brand extends \yii\db\ActiveRecord
             'sort' => '排序',
             'status' => '状态',
         ];
+    }
+
+    /*
+     * 如果是本地返回本地地址
+     * 如果是远程返回远程地址
+     */
+    public function logoUrl()
+    {
+        if(strpos($this->logo,'http://') === false){
+            return '@web'.$this->logo;
+        }
+        return $this->logo;
     }
 }

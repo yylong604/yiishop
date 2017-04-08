@@ -3,10 +3,13 @@
 namespace backend\controllers;
 
 use app\models\Brand;
+use backend\filters\AccessFilter;
 use xj\uploadify\UploadAction;
 use yii\data\Pagination;
 use yii\web\Request;
 use yii\web\UploadedFile;
+use crazyfd\qiniu\Qiniu;
+
 
 
 class BrandController extends \yii\web\Controller
@@ -55,7 +58,7 @@ class BrandController extends \yii\web\Controller
                     //赋值给logo
                     $model->logo=$file_name;
                 }*/
-//                var_dump($model->logo);exit;
+//                var_dump($model);exit;
                 //保存到数据库
                 $model->save();
                 //设置友好提示
@@ -207,12 +210,73 @@ class BrandController extends \yii\web\Controller
                 'afterValidate' => function (UploadAction $action) {},
                 'beforeSave' => function (UploadAction $action) {},
                 'afterSave' => function (UploadAction $action) {
-                    $action->output['fileUrl'] = $action->getWebUrl();
-                    $action->getFilename(); // "image/yyyymmddtimerand.jpg"
-                    $action->getWebUrl(); //  "baseUrl + filename, /upload/image/yyyymmddtimerand.jpg"
-                    $action->getSavePath(); // "/var/www/htdocs/upload/image/yyyymmddtimerand.jpg"
+                   //$action->output['fileUrl'] = $action->getWebUrl();
+                    /* $action->getFilename(); // "image/yyyymmddtimerand.jpg"  文件名
+                    $action->getWebUrl(); //  "baseUrl + filename, /upload/image/yyyymmddtimerand.jpg" 网络地址
+                    $action->getSavePath();*/ // "/var/www/htdocs/upload/image/yyyymmddtimerand.jpg" 物理地址
+
+                   //上传图片到七牛云
+
+                    $qiniu=\Yii::$app->qiniu;//实例化七牛云组件
+                    $qiniu->uploadFile($action->getSavePath(),$action->getFilename());//上传到七牛云
+                    $url=$qiniu->getLink($action->getFilename());//获取到url地址.
+                    $action->output['fileUrl'] = $url;//将七牛云地址返回给前端js
                 },
             ],
         ];
+    }
+
+
+    //qiniu
+    public function actionTest()
+    {
+
+//        $file_name=\Yii::getAlias('@webroot').'/upload/brand/123.jpg';
+//        var_dump($file_name);exit;
+      /*  $ak = 'h3YyJyOYVogel2F3g-Pru-_B1lcql8DlR88yLSDG';
+        $sk = 'W5q_gThvOOABgfLb1yPkYu1Nj7NS-o3FU2kRM2sd';
+        $domain = 'http://onko5sc8g.bkt.clouddn.com/';
+        $bucket = 'yii-shop';
+        $qiniu = new Qiniu($ak, $sk,$domain, $bucket);*/
+      /*  $qiniu=\Yii::$app->qiniu;
+//        var_dump($qiniu);exit;
+        $key = '123.jpg';
+        $file_name=\Yii::getAlias('@webroot').'/upload/brand/123.jpg';
+        $qiniu->uploadFile($file_name,$key);
+        $url = $qiniu->getLink($key);
+        return $url;*/
+    }
+
+
+    //rbac配合acf使用
+    public function behaviors(){
+
+        return [
+            'accessFilters'=>[
+                'class'=>AccessFilter::className(),
+//                'only'=>['index','add','del','edit','s-upload'],
+            ],
+        ];
+
+
+
+       /*return[
+           'ACF'=>[
+                'class'=>AccessControl::className(),
+                'only'=>['index','add','edit','del'],
+                'rules'=>
+                 [
+                    'allow'=>true,
+                    'actions'=>'index',
+                    'roles'=>['?'],
+                 ],
+
+                 [
+                     'allow'=>true,
+                     'actions'=>['index','add','edit','del'],
+                     'roles'=>['@']
+                 ]
+           ]
+       ];*/
     }
 }

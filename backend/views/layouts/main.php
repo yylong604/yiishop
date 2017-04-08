@@ -35,11 +35,24 @@ AppAsset::register($this);
         ],
     ]);
     $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
+        /*['label' => '品牌列表', 'url' => ['/brand/index']],
+        ['label' => '文章列表', 'url' => ['/article/index']],
+        ['label' => '文章分类', 'url' => ['/article-category/index']],*/
     ];
+    /*
+     * 需要:根据登录的用户信息,获取用户权限,展示用户权限
+     * 1.在模型中写方法
+     * 2.在layouts中获得
+     *
+     */
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
     } else {
+        /*
+         * 根据当前身份对象  获得菜单  合并数组
+         */
+        $menuItems = \yii\helpers\ArrayHelper::merge($menuItems,\Yii::$app->user->identity->getMenuItems());
+
         $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post')
             . Html::submitButton(
